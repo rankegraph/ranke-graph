@@ -673,9 +673,14 @@ The midpoint is the time a value makes likeliest, so `2010` precedes `201X`, who
 five years later, and `2014` precedes `2014/2016`. Equal midpoints tie, and `R-QSORT` breaks the
 tie. The comparison is one value per claim, so a layer may store it and sort on it natively.]
 
-#rule("R-QTIMEOP", FREE)[Where a comparison tests a time (`compare: temporal`, or a field that
-`V-TIME` or `V-DATED` governs), its value MUST be a timestamp in `V-TIME` form or an EDTF Level 1
-value (`V-DATED`). Any other value MUST be rejected. (`R-QTEMPORAL`, `R-QEVAL`)]
+#rule("R-QTIMEOP", FREE)[A comparison on a field `V-TIME` or `V-DATED` governs takes the form that
+field's own rule fixes: a `V-TIME` field admits a `V-TIME` timestamp alone, a `V-DATED` field an
+EDTF Level 1 value alone. The form is the field's, not the caller's, because EDTF admits
+`2026-01-01T00:00:02Z`, `2026-01-01T00:00:02.000000000Z` and `2026-01-01T01:00:02+01:00` as one
+instant spelled three ways: a caller's choice would leave a backend comparing the stored text
+against a bound naming the neighbouring second. Every other value MUST be rejected, a glob
+included, naming neither form. Sorting such a field is `compare: temporal`'s, and separate
+(`R-QTEMPORAL`). (`R-QEVAL`)]
 
 Because the order is total, paging is stable: carry the last row's key into a
 `where` on the next request.

@@ -7,6 +7,18 @@ requires, defines, or removes; rewording does not.
 
 ## Unreleased
 
+**`R-QTIMEOP` names one form per field, and drops a trigger no query could
+carry.** Its "a `V-TIME` timestamp or an EDTF Level 1 value" read as the
+caller's choice, and EDTF admits `2026-01-01T00:00:02Z`,
+`2026-01-01T00:00:02.000000000Z` and `2026-01-01T01:00:02+01:00` as one instant
+spelled three ways — so a backend comparing stored text against a loosely
+spelled bound answered for the neighbouring second. The form is now the field's:
+a `V-TIME` field admits a `V-TIME` timestamp alone, a `V-DATED` field an EDTF
+value alone, and a glob is rejected with everything else, naming neither form.
+The rule also triggered on `compare: temporal`, which is an ordering collation
+(`R-QTEMPORAL`) and names no comparison operand, so no implementation could
+honour it; the trigger is now the field alone.
+
 ## v0.25.3 — 2026-09-02
 
 **`R-QTIMEOP` fixes the form of a time a query compares against.** The schema
