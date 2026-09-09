@@ -675,12 +675,11 @@ tie. The comparison is one value per claim, so a layer may store it and sort on 
 
 #rule("R-QTIMEOP", FREE)[A comparison on a field `V-TIME` or `V-DATED` governs takes the form that
 field's own rule fixes: a `V-TIME` field admits a `V-TIME` timestamp alone, a `V-DATED` field an
-EDTF Level 1 value alone. The form is the field's, not the caller's, because EDTF admits
-`2026-01-01T00:00:02Z`, `2026-01-01T00:00:02.000000000Z` and `2026-01-01T01:00:02+01:00` as one
-instant spelled three ways: a caller's choice would leave a backend comparing the stored text
-against a bound naming the neighbouring second. Every other value MUST be rejected, a glob
-included, naming neither form. Sorting such a field is `compare: temporal`'s, and separate
-(`R-QTEMPORAL`). (`R-QEVAL`)]
+EDTF Level 1 value alone. Every other value MUST be rejected, a glob included: a pattern names no
+instant. An interval is a pair of bounds. The form governs the value as *encoded*: a binding MAY
+take its own language's temporal type and MUST render it into that form, and passing one through
+or rendering it another way is the rejection above. Sorting such a field is `compare: temporal`'s,
+and separate (`R-QTEMPORAL`). (`R-QEVAL`)]
 
 Because the order is total, paging is stable: carry the last row's key into a
 `where` on the next request.

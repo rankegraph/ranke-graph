@@ -14,10 +14,22 @@ caller's choice, and EDTF admits `2026-01-01T00:00:02Z`,
 spelled three ways — so a backend comparing stored text against a loosely
 spelled bound answered for the neighbouring second. The form is now the field's:
 a `V-TIME` field admits a `V-TIME` timestamp alone, a `V-DATED` field an EDTF
-value alone, and a glob is rejected with everything else, naming neither form.
-The rule also triggered on `compare: temporal`, which is an ordering collation
-(`R-QTEMPORAL`) and names no comparison operand, so no implementation could
-honour it; the trigger is now the field alone.
+value alone, and a glob is rejected with everything else, naming neither form —
+a pattern names no instant, and matching one against a fixed-width form half
+works, `2026-*` catching a year where `2026-01-01T00:00:02Z*` catches nothing.
+An interval is a pair of bounds. The rule also triggered on `compare: temporal`,
+which is an ordering collation (`R-QTEMPORAL`) and names no comparison operand,
+so no implementation could honour it; the trigger is now the field alone.
+
+**A binding may take its own language's temporal type.** The rule said the value
+must be a `V-TIME` timestamp, which is a *text* form, so a caller holding a
+native instant was refused — while every implementation that offers one renders
+it correctly anyway. The form binds the value as encoded, and a binding MAY
+accept its language's temporal type provided it renders it into that form.
+Passing one through, or rendering it another way, remains the rejection. The
+distinction is worth fixing in the rule because it is unobservable over the
+wire: no conformance run can catch a binding that diverges here, so the text is
+the only thing governing it.
 
 ## v0.25.3 — 2026-09-02
 
