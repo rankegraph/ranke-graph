@@ -209,12 +209,11 @@ wherever it is computed.]
 #rule("V-HASH", FORCED)[$H$ MUST be a multihash: the multicodec varint `0x12`
 (`sha2-256`), the digest length, then the digest.]
 
-#rule("V-SIGN", FORCED)[$"Sign"$ MUST be Ed25519 (RFC 8032), named in the envelope's
-protected header as the COSE algorithm `EdDSA` (`-8`). It signs the `Sig_structure` of
-RFC 9052 §4.4 over the payload, and the envelope's signature field holds the raw signature.
-A `pubkey` is framed as the multicodec varint `0xed` (`ed25519-pub`) followed by the raw
-key; the algorithm the header names is what identifies the scheme a signature was made
-under.]
+#rule("V-SIGN", FORCED)[$"Sign"$ MUST be one of two schemes: *Ed25519* (RFC 8032), the
+COSE algorithm `EdDSA` (`-8`), its `pubkey` framed as the multicodec varint `0xed`
+(`ed25519-pub`) over the raw key; or *ECDSA over P-256 with SHA-256*, `ES256` (`-7`),
+its `pubkey` framed as `0x1200` (`p256-pub`) over the compressed point. The protected
+header names the scheme (`V-ENV`) and so does the key framing, and the two MUST agree.]
 
 #rule("V-ALIAS", FORCED)[A well-known field name, a type class, a type subtype, and an
 encoding class or subtype MAY appear in its alias form: the reserved `.` followed by the
@@ -291,6 +290,11 @@ or `-1` (to); an edge of any other class MUST carry `0`. (foundation paper §Rel
 #rule("R-FIELDS", FREE)[A field name MUST be at most 128 bytes over `[a-z0-9_]` with no
 leading `_`; a value at most 64 KiB; a record at most 256 fields; inline content at most
 1 MiB. Larger data belongs in external content (`V-CONTENT`).]
+
+#rule("R-BRANCHNAME", FREE)[A branch name takes the form `R-FIELDS` gives a field name: at
+most 128 bytes over `[a-z0-9_]` with no leading `_`. The charset admits no `$`, so a branch
+cannot carry a reserved target's name (`R-AGRANT`) and be read as it instead. The label
+rides in every table of the spine, so an unbounded one is carried for the archive's life.]
 
 #rule("R-BMPREFIX", FREE)[A blob store holding both $cal(U)$ and
 $cal(U)_"hist"$ keys bookmark entries under a distinct prefix, separating the
@@ -673,9 +677,13 @@ The midpoint is the time a value makes likeliest, so `2010` precedes `201X`, who
 five years later, and `2014` precedes `2014/2016`. Equal midpoints tie, and `R-QSORT` breaks the
 tie. The comparison is one value per claim, so a layer may store it and sort on it natively.]
 
-#rule("R-QTIMEOP", FREE)[Where a comparison tests a time (`compare: temporal`, or a field that
-`V-TIME` or `V-DATED` governs), its value MUST be a timestamp in `V-TIME` form or an EDTF Level 1
-value (`V-DATED`). Any other value MUST be rejected. (`R-QTEMPORAL`, `R-QEVAL`)]
+#rule("R-QTIMEOP", FREE)[A comparison on a field `V-TIME` or `V-DATED` governs takes the form that
+field's own rule fixes: a `V-TIME` field admits a `V-TIME` timestamp alone, a `V-DATED` field an
+EDTF Level 1 value alone. Every other value MUST be rejected, a glob included: a pattern names no
+instant. An interval is a pair of bounds. The form governs the value as *encoded*: a binding MAY
+take its own language's temporal type and MUST render it into that form, and passing one through
+or rendering it another way is the rejection above. Sorting such a field is `compare: temporal`'s,
+and separate (`R-QTEMPORAL`). (`R-QEVAL`)]
 
 Because the order is total, paging is stable: carry the last row's key into a
 `where` on the next request.
