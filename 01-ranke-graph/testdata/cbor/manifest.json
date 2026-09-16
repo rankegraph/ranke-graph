@@ -2,8 +2,8 @@
   "note": "Reference artifacts for the Ranke-Graph ADT. A claim record is {1: S(node)}; its id is not in the record, so each case pairs bytes with the id they are offered under. Verification hashes the record as received, never a re-encode. A bookmark record is a COSE_Sign1 over S([i, s, k]), paired with the id_seq(i, s) slot it is offered at.",
   "provenance": {
     "generator": "github.com/rankegraph/ranke-go/cmd/vectors",
-    "version": "v0.27.0-rc.2",
-    "generated_at": "2026-09-02T11:48:25Z"
+    "version": "v0.34.0-rc.1",
+    "generated_at": "2026-09-16T15:02:10Z"
   },
   "claims": [
     {
@@ -75,6 +75,20 @@
       "verify": true,
       "reason": "ok",
       "why": "attributed to other-contributor"
+    },
+    {
+      "file": "claims/p256-contributor.cbor",
+      "id": "bciqizbx5ce57erbla4jssz72sogm4vpzladzs7x3mhefud6fenjvp3i",
+      "verify": true,
+      "reason": "ok",
+      "why": "initial claim whose content is its own p256-pub multikey, its envelope naming ES256 (`V-SIGN`)"
+    },
+    {
+      "file": "claims/p256-note.cbor",
+      "id": "bciqo4eiy4zvmeahplrhvtcqk6pzinkn2tzikntlxcgq4p2nqdabjiuy",
+      "verify": true,
+      "reason": "ok",
+      "why": "attributed to p256-contributor, so its signature verifies under a P-256 key"
     },
     {
       "file": "claims/rejected-wrong-message.cbor",
@@ -166,6 +180,16 @@
       "violates": [
         "V-ARCHIVEHEIGHT",
         "V-HEIGHT"
+      ]
+    },
+    {
+      "file": "claims/rejected-scheme-disagreement.cbor",
+      "id": "bciqpjaz2sjyjmffvm53zmfz26wuaf5vcjq7vitpkh55kqarq5zzmzpq",
+      "verify": false,
+      "reason": "signature_scheme",
+      "why": "p256-note's record under an EdDSA header, its contributor's key framed p256-pub",
+      "violates": [
+        "V-SIGN"
       ]
     },
     {
