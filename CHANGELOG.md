@@ -7,6 +7,21 @@ requires, defines, or removes; rewording does not.
 
 ## Unreleased
 
+## v0.28.0 — 2026-09-16
+
+**`select.claim` anchors at a set of ids, and an empty `path` returns the
+frontier itself.** Fetching several claims by id took one query each: `claim`
+named a single id, and `where` tests the fields a claim carries, which the id is
+not. A client building a claim hits this every time, since `height` is fixed by
+the claims the new one references and sits in the signed payload, so it must be
+resolved before signing and no server can fill it in — N references meant N
+sends. `claim` now takes one id or a set of them. On its own that would have
+returned N closures, because an absent `path` yields the frontier's full outward
+closure and no step could ask for less: `min: 0` always carries a hop with it,
+and `max: 0` means unbounded. An empty `path` now takes no step and returns the
+frontier, so a set anchor with `"path": []` returns exactly the claims named.
+(`R-QANCHOR`, `R-QSTEPS`, `R-QFRONTIER`, `R-QCCLAUSE`, `R-QCSCOPE`)
+
 ## v0.27.0 — 2026-09-16
 
 **Conformance vectors cover the second signature scheme.** Regenerated from

@@ -488,8 +488,8 @@ Query = {
 Select = {                   // a generator: scope, closure, start, traversal
   branch:  string            // "$universe" | "$archive" | a branch name
   head?:   Id                // narrows to closure(head); required under "$universe"
-  claim?:  Id                // walk start in the closure; absent -> unanchored
-  path?:   [PathStep]        // absent -> the full outward closure of the frontier
+  claim?:  Id | [Id]         // walk start(s) in the closure; absent -> unanchored
+  path?:   [PathStep]        // [] -> the frontier itself; absent -> its full outward closure
 }
 
 PathStep = {                 // follow typed edges for min..max hops
@@ -569,13 +569,19 @@ of the scope's graph and $"closure"("head", cal(U))$, so a `head` narrows a quer
 `$universe` it is *required* and MAY name any claim the Universe holds; under every other
 scope it is *optional*.]
 
-#rule("R-QANCHOR", FREE)[`claim` *anchors* the frontier at the single claim it names,
-which MUST lie inside the closure. Absent, the frontier is every claim in the closure
-and the path is *unanchored*.]
+#rule("R-QANCHOR", FREE)[`claim` *anchors* the frontier at the claims it names, one id or
+a set of them, each of which MUST lie inside the closure. A set names its members in no
+order and holds each once, a repeated id counting once. Absent, the frontier is every
+claim in the closure and the path is *unanchored*.]
 
-An anchored generator asks what one claim reaches; an unanchored one asks where a
+An anchored generator asks what its claims reach; an unanchored one asks where a
 shape occurs, which is Cypher's `MATCH` with and without a bound variable. Both are
 bounded alike by the closure, and unanchored with no step names the closure itself.
+
+A set anchor fetches several claims by id in one read, which a client building a claim
+needs: `height` is fixed by the claims the new one references (`V-HEIGHT`) and sits in the
+signed payload, so it is resolved before signing and no server can fill it in. A set
+anchor with no step (`R-QSTEPS`) returns exactly those claims.
 
 #rule("R-QSTEPS", FREE)[A `PathStep` states the conditions one section of a path MUST
 satisfy. `edges` bounds the walk: every hop MUST follow an edge whose `type` is listed.
@@ -588,15 +594,19 @@ alone admits every other type. `dir` sets the traversal direction:
 `connections` (either). `min` and `max` bound the hops
 a step takes: an absent `min` is 1, `min: 0` also yields the frontier it starts from, and
 a `max` of `0` or an absent `max` leaves the step unbounded. A `min` above a bounded `max`
-MUST be rejected. An absent `path` returns the full outward closure of the frontier
-(foundation paper §Closures).]
+MUST be rejected. An empty `path` takes no step and returns the frontier itself; an absent
+`path` returns its full outward closure (foundation paper §Closures).]
 
 The two zeros of `R-QSTEPS` differ because each has only one useful sense: a step of
 at most zero hops would move nothing, so `max: 0` means unbounded, while `min: 0`
 yields the starting set alongside what lies beyond it.
 
+`path: []` and an absent `path` differ for the same reason: a list of no steps walks
+nowhere, which is the read that asks for named claims and nothing they cite, while an
+absent list is the unbounded default a generator falls back on.
+
 #rule("R-QFRONTIER", FREE)[A `path` is a sequence of steps over *frontiers*, each frontier
-a *set* of claims. The first is the claim `claim` anchors, or every claim in the closure
+a *set* of claims. The first is the claims `claim` anchors, or every claim in the closure
 when it names none (`R-QANCHOR`); each step's yield is the frontier the next step starts
 from (`R-QSTEPS`). Membership is all a frontier carries, so a result MUST NOT depend on
 the route by which a claim entered one. The no-repeat rule (a walk does not revisit a
@@ -730,11 +740,13 @@ the order `R-QSORT` fixes. Where a translated query and the native engine disagr
 translation is the defect.]
 
 #rule("R-QCCLAUSE", FREE)[Block by block: `select` translates to a `MATCH` whose start
-node is pinned by id where `claim` anchors it and reached from the scope's head otherwise;
-`where` to a `WHERE` over the endpoint; `order` to an `ORDER BY` carrying the
+node is pinned by id where `claim` anchors it, by membership where it anchors a set, and
+reached from the scope's head otherwise; `where` to a `WHERE` over the endpoint;
+`order` to an `ORDER BY` carrying the
 `(created_at, id)` tie-break (`R-QSORT`); `limit.results` to a `LIMIT`; and
 `output.detail` to the `RETURN` projection: the id alone, or the node with its labels and
-outgoing edges. A read with no `path` translates to a scan of the scope. The remaining
+outgoing edges. A read with no `path` translates to a scan of the scope, and one with an
+empty `path` to the pinned start alone, carrying no segment (`R-QSTEPS`). The remaining
 fields stay outside the statement: `output`'s `form` and `content`, `limit.time`, and
 `execution` (`R-QEVAL`).]
 
@@ -751,8 +763,8 @@ admits.]
 
 #rule("R-QCSCOPE", FREE)[However a translation confines a query (a walk from the scope's
 head, or an index the backend maintains), the confined set MUST equal the scope's graph
-(`R-QSCOPE`). The anchor and every claim a step reaches MUST lie inside it, a reverse step
-included (`R-QANCHOR`, `R-QHEAD`).]
+(`R-QSCOPE`). Every anchor and every claim a step reaches MUST lie inside it, a reverse
+step included (`R-QANCHOR`, `R-QHEAD`).]
 
 = Annex — Serialization Tables <sec:serialization>
 
