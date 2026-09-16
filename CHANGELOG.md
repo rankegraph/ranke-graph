@@ -7,6 +7,14 @@ requires, defines, or removes; rewording does not.
 
 ## Unreleased
 
+**Conformance vectors cover the second signature scheme.** Regenerated from
+ranke-go v0.34.0-rc.1, with three claims for the two-scheme `V-SIGN`: a
+contributor whose content is its own `p256-pub` multikey and whose envelope
+names `ES256`, a note attributed to it, and `rejected-scheme-disagreement`,
+which offers that note under an `EdDSA` header while its contributor's key
+stays framed `p256-pub`. That refusal carries a `signature_scheme` reason, new
+here, and gives the agreement clause `V-SIGN` gained in v0.26.0 its first case.
+
 ## v0.26.0 — 2026-09-16
 
 **`V-SIGN` admits ECDSA over P-256 alongside Ed25519.** Ed25519 was the only
