@@ -7,6 +7,8 @@ requires, defines, or removes; rewording does not.
 
 ## Unreleased
 
+## v0.26.0 — 2026-09-16
+
 **`V-SIGN` admits ECDSA over P-256 alongside Ed25519.** Ed25519 was the only
 scheme, and Azure Key Vault and Managed HSM publish no Ed25519 key type, so a
 key held in either could sign nothing this graph accepts — a deployment wanting
