@@ -7,6 +7,8 @@ requires, defines, or removes; rewording does not.
 
 ## Unreleased
 
+## v0.27.0 — 2026-09-16
+
 **Conformance vectors cover the second signature scheme.** Regenerated from
 ranke-go v0.34.0-rc.1, with three claims for the two-scheme `V-SIGN`: a
 contributor whose content is its own `p256-pub` multikey and whose envelope
