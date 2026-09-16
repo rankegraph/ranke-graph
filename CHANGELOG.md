@@ -7,6 +7,8 @@ requires, defines, or removes; rewording does not.
 
 ## Unreleased
 
+## v0.28.0 — 2026-09-16
+
 **`select.claim` anchors at a set of ids, and an empty `path` returns the
 frontier itself.** Fetching several claims by id took one query each: `claim`
 named a single id, and `where` tests the fields a claim carries, which the id is
