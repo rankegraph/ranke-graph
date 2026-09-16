@@ -7,6 +7,26 @@ requires, defines, or removes; rewording does not.
 
 ## Unreleased
 
+**`V-SIGN` admits ECDSA over P-256 alongside Ed25519.** Ed25519 was the only
+scheme, and Azure Key Vault and Managed HSM publish no Ed25519 key type, so a
+key held in either could sign nothing this graph accepts — a deployment wanting
+one had to keep the key as a vault secret and sign in process instead. A claim
+now names its scheme twice, in the envelope header and in the key framing, and
+the two must agree.
+
+**The foundation paper stops requiring a deterministic signature.** §Primitives
+asked `Sign` to be "asymmetric and deterministic" and pointed ECDSA at RFC 6979,
+which a key held in an HSM does not satisfy. Nothing rested on it: verification
+never re-signs.
+
+**`R-BRANCHNAME` fixes the form of a branch name.** Nothing constrained it: a branch
+label is a field *value*, so `R-FIELDS` bounded it at 64 KiB and said nothing else.
+An implementation could therefore admit a branch literally named `$archive`, which
+`R-AGRANT` reserves — the branch would sit in the table and be read as the reserved
+target instead, unreachable by its own name. A branch name now takes the form
+`R-FIELDS` gives a field name, at most 128 bytes over `[a-z0-9_]` with no leading
+`_`, a charset that admits no `$` at all.
+
 **`R-QTIMEOP` names one form per field, and drops a trigger no query could
 carry.** Its "a `V-TIME` timestamp or an EDTF Level 1 value" read as the
 caller's choice, and EDTF admits `2026-01-01T00:00:02Z`,

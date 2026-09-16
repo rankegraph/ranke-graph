@@ -181,11 +181,11 @@ Let $S$ be a canonical serialization mapping any object (node or edge) to bytes.
 
 Let $H$ be a cryptographic hash function. It must be collision-resistant and self-describing.
 
-Let $"Sign"$ be an asymmetric and deterministic signature function.
+Let $"Sign"$ be an asymmetric signature function.
 
 Let $"env"$ be the *envelope*, a claim as it is stored: the scheme, the signature, and the serialized claim, $"env"(v) = (a, sigma, S(v))$, where $sigma$ verifies $S(v)$ under scheme $a$ against the contributor's public key.
 
-Any satisfying choice is acceptable. We propose CBOR Deterministic (RFC 8949 §4.2) for $S$, IPFS multihash for $H$, Ed25519 (RFC 8032) or ECDSA with RFC 6979 for $"Sign"$, and COSE_Sign1 (@rfc9052) for $"env"$, each fixed exactly in the normative specification (@rankespec).
+Any satisfying choice is acceptable. We propose CBOR Deterministic (RFC 8949 §4.2) for $S$, IPFS multihash for $H$, Ed25519 (RFC 8032) or ECDSA for $"Sign"$, and COSE_Sign1 (@rfc9052) for $"env"$, each fixed exactly in the normative specification (@rankespec).
 
 Let $op("id")(v) = H(S("env"(v)))$ be a claim's *identity*: the hash of its stored record. As edges are fully contained in the `edges` field of the node, `S(v)` includes all edges. The signing key is the private key corresponding to the pubkey in $v$'s `contribution/contributor` (or in $v$'s own content, when $v$ is an initial claim).
 
