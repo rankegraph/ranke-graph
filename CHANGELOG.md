@@ -7,6 +7,8 @@ requires, defines, or removes; rewording does not.
 
 ## Unreleased
 
+## v0.29.0 — 2026-09-17
+
 **Conformance vectors regenerated.** From ranke-go v0.35.0-rc.1, over the same
 set of cases: 27 claims and 9 bookmarks, none added, removed, or renamed, and no
 `reason`, `violates`, or stated ground changed. What changed is the bytes — every
