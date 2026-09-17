@@ -7,6 +7,12 @@ requires, defines, or removes; rewording does not.
 
 ## Unreleased
 
+**Conformance vectors regenerated.** From ranke-go v0.35.0-rc.1, over the same
+set of cases: 27 claims and 9 bookmarks, none added, removed, or renamed, and no
+`reason`, `violates`, or stated ground changed. What changed is the bytes — every
+case carries a new serialization and a new pinned id, so an implementation
+vendoring the vectors takes them again and asserts against the new ids.
+
 ## v0.28.0 — 2026-09-16
 
 **`select.claim` anchors at a set of ids, and an empty `path` returns the
